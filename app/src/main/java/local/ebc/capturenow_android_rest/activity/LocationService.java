@@ -9,27 +9,32 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.widget.Toast;
+
+import local.ebc.capturenow_android_rest.R;
 
 /**
  * Created by ebc on 08.12.2016.
  */
 
-public class SensorDataService extends IntentService {
+public class LocationService extends IntentService {
 
     private LocationManager locationManager;
     private LocationListener locationListener;
-    private Location currentLocation;
+    private Context context;
 
-    public SensorDataService() {
-        super("SensorDataService");
+    public LocationService() {
+        super("LocationService");
     }
 
 
     @Override
     protected void onHandleIntent(Intent intent) {
         getLocationData();
+        context = this;
     }
 
     public void getLocationData() {
@@ -39,11 +44,13 @@ public class SensorDataService extends IntentService {
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
-                if (location.getAccuracy() > 20) {
+                //if (location.getAccuracy() > 20) {
                     // The location has sufficient accuracy, save it to global variable.
-                    currentLocation = location;
+
+                    Toast toast = Toast.makeText(context, location.toString(), Toast.LENGTH_LONG);
+                    toast.show();
                     closeUpdates();
-                }
+                //}
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {

@@ -2,6 +2,7 @@ package local.ebc.capturenow_android_rest.activity;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -36,10 +37,16 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Retrieving location...", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                startGpsService();
+
             }
         });
     }
 
+    public void startGpsService(){
+        Intent gpsIntent = new Intent(this, LocationService.class);
+        getApplicationContext().startService(gpsIntent);
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
