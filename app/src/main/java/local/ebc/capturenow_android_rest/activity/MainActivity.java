@@ -10,6 +10,9 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,7 +39,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import local.ebc.capturenow_android_rest.R;
 import local.ebc.capturenow_android_rest.adapter.CaptureListItemAdapter;
-import local.ebc.capturenow_android_rest.helper.CameraPreview;
+import local.ebc.capturenow_android_rest.fragment.CameraFragment;
+
 import local.ebc.capturenow_android_rest.model.Capture;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
@@ -47,9 +51,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private Double lat,lon;
+    private boolean capturing;
 
-    static final int REQUEST_IMAGE_CAPTURE = 1;
+    FragmentManager manager;
+    FragmentTransaction transaction;
+    Fragment fragment;
+
     @BindView(R.id.recyclerView) RecyclerView recyclerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,44 +66,58 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         buildGoogleApiClient();
 
+        capturing = false;
+        manager = getSupportFragmentManager();
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setHasFixedSize(true);
 
-        /*
-        mCamera = getCameraInstance();
-
-        // Create our Preview view and set it as the content of our activity.
-        mPreview = new CameraPreview(this, mCamera);
-        preview.addView(mPreview);
-        */
         final Context context = this;
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Disconnected the listener.", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                if(!capturing){
+                    //Load the camera fragment.
+                    loadFragment();
 
-                mGoogleApiClient.disconnect();
+                    //Connect the GPS API.
+                    mGoogleApiClient.connect();
+                } else {
+                    //Remove the camera fragment.
+                    manager = getSupportFragmentManager();
+                    transaction = manager.beginTransaction();
+                    transaction.remove(fragment);
+                    transaction.commit();
+                    capturing = false;
 
-                byte[] img = new byte[] {0, 1, 2};
-                Capture capture = new Capture("my first capture", lat, lon, img, "description");
-
-                List<Capture> list = new ArrayList<>();
-                list.add(capture);
-                CaptureListItemAdapter adapter = new CaptureListItemAdapter(list, context);
-                recyclerView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
+                    //Disconnect the GPS API.
+                    mGoogleApiClient.disconnect();
+                }
             }
         });
+
+        byte[] img = new byte[] {0, 1, 2};
+        Capture capture = new Capture("my first capture", lat, lon, img, "description");
+
+        List<Capture> list = new ArrayList<>();
+        list.add(capture);
+        CaptureListItemAdapter adapter = new CaptureListItemAdapter(list, context);
+        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
-
-
+    void loadFragment(){
+        capturing = true;
+        fragment = new CameraFragment();
+        transaction = manager.beginTransaction();
+        transaction.replace(R.id.content_main, fragment);
+        transaction.commit();
+    }
     synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -134,11 +157,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Toast toast = Toast.makeText(this, "Retrieving location..", Toast.LENGTH_SHORT);
         toast.show();
     }
-    
+
     @Override
     protected void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
     }
 
     @Override
