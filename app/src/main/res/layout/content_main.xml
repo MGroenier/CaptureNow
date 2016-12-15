@@ -13,7 +13,6 @@
     tools:context="local.ebc.capturenow_android_rest.activity.MainActivity"
     tools:showIn="@layout/activity_main">
 
-
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
@@ -23,43 +22,10 @@
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
         tools:context=".MainActivity">
-        <android.support.v7.widget.CardView
+        <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="16dp">
-            <ImageView
-                android:layout_marginTop="25dp"
-                android:layout_width="250dp"
-                android:layout_height="250dp"
-                android:id="@+id/imageView"/>
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="150dp"
-                android:text="Latitude"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:text="Longitude"
-                android:id="@+id/textView2"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true" />
-
-            <FrameLayout
-                android:id="@+id/camera_preview"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                />
-
-
-
-        </android.support.v7.widget.CardView>
-
+            android:layout_height="match_parent"
+            android:id="@+id/recyclerView">
+        </android.support.v7.widget.RecyclerView>
     </RelativeLayout>
 </RelativeLayout>
