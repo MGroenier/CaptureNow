@@ -12,6 +12,7 @@ import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import local.ebc.capturenow_android_rest.R;
+import local.ebc.capturenow_android_rest.activity.MainActivity;
 import local.ebc.capturenow_android_rest.helper.CameraPreview;
 
 /**
@@ -43,6 +44,15 @@ public class CameraFragment extends Fragment {
         // Create our Preview view and set it as the content of our activity.
         mPreview = new CameraPreview(getActivity(), mCamera);
         preview.addView(mPreview);
+
+        final MainActivity activity;
+        activity = (MainActivity) getActivity();
+        preview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mCamera.takePicture(null, null, activity.mPicture);
+            }
+        });
 
         return view;
     }
