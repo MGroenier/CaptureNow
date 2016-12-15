@@ -2,6 +2,7 @@ package local.ebc.capturenow_android_rest.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.hardware.Camera;
 import android.location.Location;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -12,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +29,7 @@ import java.io.ByteArrayOutputStream;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import local.ebc.capturenow_android_rest.R;
+import local.ebc.capturenow_android_rest.helper.CameraPreview;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener{
@@ -34,11 +37,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @BindView(R.id.textView) TextView txtOutputLat;
     @BindView(R.id.textView2) TextView txtOutputLon;
     @BindView(R.id.imageView) ImageView imageView;
+    @BindView(R.id.camera_preview) FrameLayout preview;
 
     private Location mLastLocation;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private String lat,lon;
+
+    private Camera mCamera;
+    private CameraPreview mPreview;
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
@@ -60,6 +67,23 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 dispatchTakePictureIntent();
             }
         });
+
+        mCamera = getCameraInstance();
+
+        // Create our Preview view and set it as the content of our activity.
+        mPreview = new CameraPreview(this, mCamera);
+        preview.addView(mPreview);
+    }
+
+    public static Camera getCameraInstance(){
+        Camera c = null;
+        try {
+            c = Camera.open(0); // attempt to get a Camera instance
+        }
+        catch (Exception e){
+            // Camera is not available (in use or does not exist)
+        }
+        return c; // returns null if camera is unavailable
     }
 
     private void dispatchTakePictureIntent() {
