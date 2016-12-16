@@ -2,7 +2,7 @@ package local.ebc.capturenow_android_rest.model;
 
 /**
  * Capture model for recyclerview.
- *  ebc 151216
+ *  @author Emil Claussen on 15.12.2016.
  */
 
 public class Capture  {

@@ -16,7 +16,7 @@ import local.ebc.capturenow_android_rest.activity.MainActivity;
 import local.ebc.capturenow_android_rest.helper.CameraPreview;
 
 /**
- * Created by ebc on 15.12.2016.
+ * @author Emil Claussen on 15.12.2016.
  */
 
 
@@ -27,6 +27,7 @@ public class CameraFragment extends Fragment {
     @BindView(R.id.fragment_capture_container) FrameLayout preview;
     private Camera mCamera;
     private CameraPreview mPreview;
+    private Boolean captured;
     //@BindView(R.id.fragment_capture_container) FrameLayout preview;
 
     public CameraFragment() {
@@ -40,6 +41,7 @@ public class CameraFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         mCamera = getCameraInstance();
+        captured = false;
 
         // Create our Preview view and set it as the content of our activity.
         mPreview = new CameraPreview(getActivity(), mCamera);
@@ -50,11 +52,24 @@ public class CameraFragment extends Fragment {
         preview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCamera.takePicture(null, null, activity.mPicture);
+                if (!captured) {
+                    mCamera.takePicture(null, null, activity.mPicture);
+                    captured = true;
+                } else {
+                    mCamera.startPreview();
+                    captured = false;
+                }
             }
         });
 
         return view;
+    }
+
+    public void releaseCamera() {
+        if (mCamera != null) {
+            mCamera.release();        // release the camera for other applications
+            mCamera = null;
+        }
     }
 
     public static Camera getCameraInstance(){
@@ -71,6 +86,6 @@ public class CameraFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mCamera.release();
+        releaseCamera();
     }
 }

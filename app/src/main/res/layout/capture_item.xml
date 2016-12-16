@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="wrap_content"
+    android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
@@ -21,14 +21,15 @@
         android:layout_height="250dp"
         android:layout_marginTop="2dp">
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/capture_item_image"/>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/capture_item_image"
+            android:scaleType="centerCrop"/>
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="60dp"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="8dp">
         <LinearLayout

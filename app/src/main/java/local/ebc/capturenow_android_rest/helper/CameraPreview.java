@@ -11,7 +11,7 @@ import java.io.IOException;
 import static android.content.ContentValues.TAG;
 
 /**
- * Created by ebc on 15.12.2016.
+ * @author Emil Claussen on 15.12.2016.
  */
 
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {

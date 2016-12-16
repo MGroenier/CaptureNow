@@ -1,6 +1,5 @@
 package local.ebc.capturenow_android_rest.adapter;
 
-
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,16 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
-
 import java.util.List;
-
 import local.ebc.capturenow_android_rest.R;
+import local.ebc.capturenow_android_rest.helper.RotateTransformation;
 import local.ebc.capturenow_android_rest.model.Capture;
 
 /**
- * Created by ebc on 15.12.2016.
+ * @author Emil Claussen on 15.12.2016.
  */
 
 public class CaptureListItemAdapter extends RecyclerView.Adapter<CaptureListItemAdapter.ViewHolder> {
@@ -43,6 +40,7 @@ public class CaptureListItemAdapter extends RecyclerView.Adapter<CaptureListItem
         captureArrayList.clear();
         captureArrayList.addAll(newlist);
     }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
@@ -54,6 +52,7 @@ public class CaptureListItemAdapter extends RecyclerView.Adapter<CaptureListItem
         //Populate the row
         holder.populateRow(getItem(position));
     }
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final TextView title;
         private final TextView latitude;
@@ -78,7 +77,11 @@ public class CaptureListItemAdapter extends RecyclerView.Adapter<CaptureListItem
             latitude.setText(String.valueOf(capture.getLatitude()));
             longitude.setText(String.valueOf(capture.getLongitude()));
             description.setText(capture.getDescription());
-            Glide.with(context).load(capture.getImgcapture()).into(imageView);
+            RotateTransformation t = new RotateTransformation(context, 90);
+            Glide.with(context)
+                    .load(capture.getImgcapture())
+                    .transform(t)
+                    .into(imageView);
         }
     }
 }
