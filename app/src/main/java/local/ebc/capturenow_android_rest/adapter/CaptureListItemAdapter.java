@@ -76,7 +76,6 @@ public class CaptureListItemAdapter extends RecyclerView.Adapter<CaptureListItem
             title.setText(capture.getTitle());
             latitude.setText(String.valueOf(capture.getLatitude()));
             longitude.setText(String.valueOf(capture.getLongitude()));
-            description.setText(capture.getDescription());
             RotateTransformation t = new RotateTransformation(context, 90);
             Glide.with(context)
                     .load(capture.getImgcapture())

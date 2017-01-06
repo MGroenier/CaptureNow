@@ -1,24 +1,25 @@
 package local.ebc.capturenow_android_rest.model;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * Capture model for recyclerview.
  *  @author Emil Claussen on 15.12.2016.
  */
 
 public class Capture  {
-    private int id;
-    private String title;
-    private Double longitude;
-    private Double latitude;
-    private byte[] imgcapture;
-    private String description;
+
+    @Expose private int id;
+    @Expose private String title;
+    @Expose private Double longitude;
+    @Expose private Double latitude;
+    @Expose private byte[] imgcapture;
 
     public Capture(String title, Double longitude, Double latitude, byte[] imgcapture, String description) {
         this.title = title;
         this.longitude = longitude;
         this.latitude = latitude;
         this.imgcapture = imgcapture;
-        this.description = description;
     }
 
     public int getId() {
@@ -61,11 +62,4 @@ public class Capture  {
         this.imgcapture = imgcapture;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-}
+   }

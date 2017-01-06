@@ -3,6 +3,7 @@ package local.ebc.capturenow_android_rest.activity;
 import android.content.Context;
 import android.hardware.Camera;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -12,14 +13,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import com.google.android.gms.appdatasearch.GetRecentContextCall;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -30,12 +39,21 @@ import local.ebc.capturenow_android_rest.R;
 import local.ebc.capturenow_android_rest.adapter.CaptureListItemAdapter;
 import local.ebc.capturenow_android_rest.fragment.CameraFragment;
 import local.ebc.capturenow_android_rest.model.Capture;
+import local.ebc.capturenow_android_rest.service.CaptureService;
+import local.ebc.capturenow_android_rest.service.ServiceGenerator;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * @author Emil Claussen on 15.12.2016.
  */
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
+public class MainActivity extends AppCompatActivity implements Callback<List<Capture>>, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener{
 
     private Location mLastLocation;
@@ -43,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private LocationRequest mLocationRequest;
     private Double lat,lon;
     private boolean capturing;
+    private CaptureService client;
+    private static final String TAG = "MainActivity";
 
     Context context;
     FragmentManager manager;
@@ -51,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     Capture capture;
     List<Capture> list;
+
     CaptureListItemAdapter adapter;
 
     @BindView(R.id.recyclerView) RecyclerView recyclerView;
@@ -75,6 +96,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         list = new ArrayList<>();
         adapter = new CaptureListItemAdapter(list, context);
         recyclerView.setAdapter(adapter);
+
+        client = ServiceGenerator.createService(CaptureService.class);
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -119,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
             loadRecycler(data);
+            createCapture(data);
 
         }
     };
@@ -201,6 +226,84 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         buildGoogleApiClient();
+    }
+
+    private File file;
+
+    public void bytesToFile(byte[] data){
+        try {
+            file = File.createTempFile("capture", null, this.getCacheDir());
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(data);
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void createCapture(byte[] data) {
+
+        //String imagePath = getRealPathFromUri(this, imageUri);
+        bytesToFile(data);
+
+
+        // create RequestBody instance from file
+        RequestBody requestFile =
+                RequestBody.create(MediaType.parse("multipart/form-data"), file);
+
+        // MultipartBody.Part is used to send also the actual file name
+        MultipartBody.Part body =
+                MultipartBody.Part.createFormData("capture-file", file.getName(), requestFile);
+
+        // add another part within the multipart request
+        RequestBody titlePart =
+                RequestBody.create(
+                        MediaType.parse("multipart/form-data"), capture.getTitle());
+
+        RequestBody latitude = RequestBody.create(MediaType.parse("multipart/form-data"), capture.getLatitude().toString());
+
+        RequestBody longitude = RequestBody.create(MediaType.parse("multipart/form-data"), capture.getLongitude().toString());
+
+        Call<ResponseBody> call = client.createCapture(body, titlePart, latitude, longitude);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.d(TAG, "onResponse() SUCCESS!");
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("onFailure: FAILED!", t.getMessage());
+            }
+        });
+    }
+
+    private void getCaptures() {
+        Call<List<Capture>> call = client.listCaptures();
+        call.enqueue(this);
+    }
+
+    @Override
+    public void onResponse(Call<List<Capture>> call, Response<List<Capture>> response) {
+        if(response.isSuccessful()) {
+
+            Log.d(TAG, "Request successful");
+
+            for (Capture capture : response.body()){
+                list.add(capture);
+            }
+
+            for (Capture capture : list) {
+                Log.i(TAG, capture.toString());
+            }
+
+        }
+    }
+
+    @Override
+    public void onFailure(Call<List<Capture>> call, Throwable t) {
+        Log.e(TAG, "Request NOT successful", t);
     }
 
 }
