@@ -84,24 +84,28 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
         ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         buildGoogleApiClient();
         context = this;
 
+        //Used by the camerafragment.
         capturing = false;
         manager = getSupportFragmentManager();
 
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
-        
-        recyclerView.setLayoutManager(mLayoutManager);
 
+        //Show newest captures first.
+        mLayoutManager.setReverseLayout(true);
+        mLayoutManager.setStackFromEnd(true);
+
+        //Set up the recyclerview.
+        recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setHasFixedSize(true);
         list = new ArrayList<>();
         adapter = new CaptureListItemAdapter(list, context);
         recyclerView.setAdapter(adapter);
 
+        //Set up the CaptureService and retrieve all captures from server.
         client = ServiceGenerator.createService(CaptureService.class);
-
         getCaptures();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -124,19 +128,18 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
 
                     //Disconnect the GPS API.
                     mGoogleApiClient.disconnect();
+
+                    recyclerView.scrollToPosition(list.size()-1);
                 }
             }
         });
     }
 
     public Camera.PictureCallback mPicture = new Camera.PictureCallback() {
-
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-
             createCapture(data);
             uploadCapture();
-
         }
     };
 
@@ -145,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
         int seconds = c.get(Calendar.SECOND);
         int minutes = c.get(Calendar.MINUTE);
         int hour = c.get(Calendar.HOUR);
-        String str = "CapNow" + Integer.toString(hour) + Integer.toString(minutes) + Integer.toString(seconds);
+        String str = "Capture" + Integer.toString(hour) + Integer.toString(minutes) + Integer.toString(seconds);
         capture = new Capture("0", str, lat, lon, data);
 
         bytesToFile(data);
@@ -288,18 +291,11 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
     @Override
     public void onResponse(Call<List<Capture>> call, Response<List<Capture>> response) {
         if(response.isSuccessful()) {
-
             Log.d(TAG, "Request successful");
             list.clear();
             for (Capture capture : response.body()){
-
                 list.add(capture);
             }
-
-            for (Capture capture : list) {
-                Log.i(TAG, capture.toString());
-            }
-
             adapter.notifyDataSetChanged();
         }
     }
