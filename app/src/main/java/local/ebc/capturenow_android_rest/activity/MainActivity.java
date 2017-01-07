@@ -91,8 +91,10 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
         capturing = false;
         manager = getSupportFragmentManager();
 
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
+        
         recyclerView.setLayoutManager(mLayoutManager);
+
         recyclerView.setHasFixedSize(true);
         list = new ArrayList<>();
         adapter = new CaptureListItemAdapter(list, context);
@@ -127,40 +129,31 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
         });
     }
 
-    //TODO: implement list updates using adapter listUpdate(); instead
-    /*
-    void loadRecycler(byte[] captureimg){
-        byte[] img = captureimg;
-        Calendar c = Calendar.getInstance();
-        int seconds = c.get(Calendar.SECOND);
-        int minutes = c.get(Calendar.MINUTE);
-        int hour = c.get(Calendar.HOUR);
-        String str = "CapNow" + Integer.toString(hour) + Integer.toString(minutes) + Integer.toString(seconds);
-        capture = new Capture("0", str, lat, lon, img);
-        list.add(capture);
-        adapter.notifyDataSetChanged();
-    }*/
-    void loadRecycler() {/*
-        Calendar c = Calendar.getInstance();
-        int seconds = c.get(Calendar.SECOND);
-        int minutes = c.get(Calendar.MINUTE);
-        int hour = c.get(Calendar.HOUR);
-        String str = "CapNow" + Integer.toString(hour) + Integer.toString(minutes) + Integer.toString(seconds);
-        capture = new Capture("0", str, lat, lon);
-        list.add(capture);*/
-        adapter.notifyDataSetChanged();
-    }
-
-
     public Camera.PictureCallback mPicture = new Camera.PictureCallback() {
 
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-            //loadRecycler();
+
             createCapture(data);
+            uploadCapture();
 
         }
     };
+
+    private void createCapture(byte[] data){
+        Calendar c = Calendar.getInstance();
+        int seconds = c.get(Calendar.SECOND);
+        int minutes = c.get(Calendar.MINUTE);
+        int hour = c.get(Calendar.HOUR);
+        String str = "CapNow" + Integer.toString(hour) + Integer.toString(minutes) + Integer.toString(seconds);
+        capture = new Capture("0", str, lat, lon, data);
+
+        bytesToFile(data);
+
+        list.add(capture);
+        adapter.notifyDataSetChanged();
+
+    }
 
     void loadFragment(){
         capturing = true;
@@ -254,18 +247,7 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
         }
     }
 
-    private void createCapture(byte[] data) {
-        Calendar c = Calendar.getInstance();
-        int seconds = c.get(Calendar.SECOND);
-        int minutes = c.get(Calendar.MINUTE);
-        int hour = c.get(Calendar.HOUR);
-        String str = "CapNow" + Integer.toString(hour) + Integer.toString(minutes) + Integer.toString(seconds);
-        capture = new Capture("0", str, lat, lon);
-
-        //String imagePath = getRealPathFromUri(this, imageUri);
-        bytesToFile(data);
-
-
+    private void uploadCapture() {
         // create RequestBody instance from file
         RequestBody requestFile =
                 RequestBody.create(MediaType.parse("multipart/form-data"), file);

@@ -77,10 +77,20 @@ public class CaptureListItemAdapter extends RecyclerView.Adapter<CaptureListItem
             latitude.setText("Latitude: " + String.valueOf(capture.getLatitude()));
             longitude.setText("Longitude: " + String.valueOf(capture.getLongitude()));
             RotateTransformation t = new RotateTransformation(context, 90);
-            Glide.with(context)
-                    .load(ServiceGenerator.API_BASE_URL + "captures/jpg/" + capture.getId())
-                    .transform(t)
-                    .into(imageView);
+
+
+            if (capture.getImgcapture() != null) {
+                Glide.with(context)
+                        .load(capture.getImgcapture())
+                        .transform(t)
+                        .into(imageView);
+            } else {
+                Glide.with(context)
+                        .load(ServiceGenerator.API_BASE_URL + "captures/jpg/" + capture.getId())
+                        .transform(t)
+                        .into(imageView);
+            }
+
         }
     }
 }

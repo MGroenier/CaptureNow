@@ -13,14 +13,14 @@ public class Capture  {
     @Expose private String title;
     @Expose private Double longitude;
     @Expose private Double latitude;
-    //@Expose private byte[] imgcapture;
+    private byte[] imgcapture;
 
-    public Capture(String id, String title, Double longitude, Double latitude) {
+    public Capture(String id, String title, Double longitude, Double latitude, byte[] capture) {
         this._id = id;
         this.title = title;
         this.longitude = longitude;
         this.latitude = latitude;
-        //this.imgcapture = imgcapture;
+        this.imgcapture = capture;
     }
 
     public String getId() {
@@ -54,7 +54,7 @@ public class Capture  {
     public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
-    /*
+
     public byte[] getImgcapture() {
         return imgcapture;
     }
@@ -62,6 +62,6 @@ public class Capture  {
     public void setImgcapture(byte[] imgcapture) {
         this.imgcapture = imgcapture;
     }
-    */
+
 
    }

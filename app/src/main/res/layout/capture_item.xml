@@ -49,14 +49,6 @@
                 android:id="@+id/capture_item_latitude"
                 android:gravity="center" />
 
-            <TextView
-                android:id="@+id/capture_item_description"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="sometext"
-                android:layout_gravity="center"
-                />
-
         </LinearLayout>
 
     </android.support.v7.widget.CardView>
