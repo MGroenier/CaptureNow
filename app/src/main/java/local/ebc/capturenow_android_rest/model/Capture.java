@@ -9,25 +9,26 @@ import com.google.gson.annotations.Expose;
 
 public class Capture  {
 
-    @Expose private int id;
+    @Expose private String _id;
     @Expose private String title;
     @Expose private Double longitude;
     @Expose private Double latitude;
-    @Expose private byte[] imgcapture;
+    //@Expose private byte[] imgcapture;
 
-    public Capture(String title, Double longitude, Double latitude, byte[] imgcapture, String description) {
+    public Capture(String id, String title, Double longitude, Double latitude) {
+        this._id = id;
         this.title = title;
         this.longitude = longitude;
         this.latitude = latitude;
-        this.imgcapture = imgcapture;
+        //this.imgcapture = imgcapture;
     }
 
-    public int getId() {
-        return id;
+    public String getId() {
+        return _id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setId(String id) {
+        this._id = id;
     }
 
     public String getTitle() {
@@ -53,7 +54,7 @@ public class Capture  {
     public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
-
+    /*
     public byte[] getImgcapture() {
         return imgcapture;
     }
@@ -61,5 +62,6 @@ public class Capture  {
     public void setImgcapture(byte[] imgcapture) {
         this.imgcapture = imgcapture;
     }
+    */
 
    }

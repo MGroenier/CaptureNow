@@ -12,6 +12,7 @@ import java.util.List;
 import local.ebc.capturenow_android_rest.R;
 import local.ebc.capturenow_android_rest.helper.RotateTransformation;
 import local.ebc.capturenow_android_rest.model.Capture;
+import local.ebc.capturenow_android_rest.service.ServiceGenerator;
 
 /**
  * @author Emil Claussen on 15.12.2016.
@@ -31,10 +32,11 @@ public class CaptureListItemAdapter extends RecyclerView.Adapter<CaptureListItem
     private Capture getItem(int position) {
         return captureArrayList.get(position);
     }
+    /*
     @Override
     public long getItemId(int position) {
         return captureArrayList.get(position).getId();
-    }
+    }*/
     public void updateList(List<Capture> newlist) {
         // Set new updated list
         captureArrayList.clear();
@@ -57,7 +59,6 @@ public class CaptureListItemAdapter extends RecyclerView.Adapter<CaptureListItem
         private final TextView title;
         private final TextView latitude;
         private final TextView longitude;
-        private final TextView description;
         private final ImageView imageView;
         //initialize the variables
         public ViewHolder(View view) {
@@ -65,7 +66,6 @@ public class CaptureListItemAdapter extends RecyclerView.Adapter<CaptureListItem
             title = (TextView) view.findViewById(R.id.capture_item_title);
             latitude = (TextView) view.findViewById(R.id.capture_item_latitude);
             longitude = (TextView) view.findViewById(R.id.capture_item_longitude);
-            description = (TextView) view.findViewById(R.id.capture_item_description);
             imageView = (ImageView) view.findViewById(R.id.capture_item_image);
             view.setOnClickListener(this);
         }
@@ -74,11 +74,11 @@ public class CaptureListItemAdapter extends RecyclerView.Adapter<CaptureListItem
         }
         public void populateRow(Capture capture) {
             title.setText(capture.getTitle());
-            latitude.setText(String.valueOf(capture.getLatitude()));
-            longitude.setText(String.valueOf(capture.getLongitude()));
+            latitude.setText("Latitude: " + String.valueOf(capture.getLatitude()));
+            longitude.setText("Longitude: " + String.valueOf(capture.getLongitude()));
             RotateTransformation t = new RotateTransformation(context, 90);
             Glide.with(context)
-                    .load(capture.getImgcapture())
+                    .load(ServiceGenerator.API_BASE_URL + "captures/jpg/" + capture.getId())
                     .transform(t)
                     .into(imageView);
         }

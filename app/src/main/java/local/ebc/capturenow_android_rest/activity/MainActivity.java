@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
     private boolean capturing;
     private CaptureService client;
     private static final String TAG = "MainActivity";
+    private File file;
 
     Context context;
     FragmentManager manager;
@@ -99,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
 
         client = ServiceGenerator.createService(CaptureService.class);
 
+        getCaptures();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -126,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
     }
 
     //TODO: implement list updates using adapter listUpdate(); instead
+    /*
     void loadRecycler(byte[] captureimg){
         byte[] img = captureimg;
         Calendar c = Calendar.getInstance();
@@ -133,16 +136,27 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
         int minutes = c.get(Calendar.MINUTE);
         int hour = c.get(Calendar.HOUR);
         String str = "CapNow" + Integer.toString(hour) + Integer.toString(minutes) + Integer.toString(seconds);
-        capture = new Capture(str, lat, lon, img, "description");
+        capture = new Capture("0", str, lat, lon, img);
         list.add(capture);
         adapter.notifyDataSetChanged();
+    }*/
+    void loadRecycler() {/*
+        Calendar c = Calendar.getInstance();
+        int seconds = c.get(Calendar.SECOND);
+        int minutes = c.get(Calendar.MINUTE);
+        int hour = c.get(Calendar.HOUR);
+        String str = "CapNow" + Integer.toString(hour) + Integer.toString(minutes) + Integer.toString(seconds);
+        capture = new Capture("0", str, lat, lon);
+        list.add(capture);*/
+        adapter.notifyDataSetChanged();
     }
+
 
     public Camera.PictureCallback mPicture = new Camera.PictureCallback() {
 
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-            loadRecycler(data);
+            //loadRecycler();
             createCapture(data);
 
         }
@@ -229,8 +243,6 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
         buildGoogleApiClient();
     }
 
-    private File file;
-
     public void bytesToFile(byte[] data){
         try {
             file = File.createTempFile("capture", null, this.getCacheDir());
@@ -243,6 +255,12 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
     }
 
     private void createCapture(byte[] data) {
+        Calendar c = Calendar.getInstance();
+        int seconds = c.get(Calendar.SECOND);
+        int minutes = c.get(Calendar.MINUTE);
+        int hour = c.get(Calendar.HOUR);
+        String str = "CapNow" + Integer.toString(hour) + Integer.toString(minutes) + Integer.toString(seconds);
+        capture = new Capture("0", str, lat, lon);
 
         //String imagePath = getRealPathFromUri(this, imageUri);
         bytesToFile(data);
@@ -290,16 +308,17 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
         if(response.isSuccessful()) {
 
             Log.d(TAG, "Request successful");
-
+            list.clear();
             for (Capture capture : response.body()){
-                Log.d(TAG, capture.getTitle());
-                //list.add(capture);
+
+                list.add(capture);
             }
 
             for (Capture capture : list) {
                 Log.i(TAG, capture.toString());
             }
 
+            adapter.notifyDataSetChanged();
         }
     }
 
