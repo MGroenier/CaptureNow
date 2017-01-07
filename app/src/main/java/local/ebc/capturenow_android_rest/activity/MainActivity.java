@@ -179,7 +179,8 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_getcaptures) {
+            getCaptures();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -291,7 +292,8 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
             Log.d(TAG, "Request successful");
 
             for (Capture capture : response.body()){
-                list.add(capture);
+                Log.d(TAG, capture.getTitle());
+                //list.add(capture);
             }
 
             for (Capture capture : list) {

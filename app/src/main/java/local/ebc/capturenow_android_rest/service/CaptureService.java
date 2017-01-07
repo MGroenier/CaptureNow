@@ -27,7 +27,8 @@ public interface CaptureService {
     @POST("captures")
     Call<ResponseBody> createCapture(@Part MultipartBody.Part file,
                                      @Part("title") RequestBody title,
-                                     @Part("latitude") RequestBody latitude,
-                                     @Part("longitude") RequestBody longitude);
+                                     @Part("longitude") RequestBody longitude,
+                                     @Part("latitude") RequestBody latitude
+                                     );
 
 }
