@@ -21,6 +21,9 @@ import local.ebc.capturenow_android_rest.service.ServiceGenerator;
 public class CaptureListItemAdapter extends RecyclerView.Adapter<CaptureListItemAdapter.ViewHolder> {
     final Context context;
     private final List<Capture> captureArrayList;
+    private final String mapApiBaseString = "https://maps.googleapis.com/maps/api/staticmap?center=";
+    private final String mapApiConfigString = "&zoom=11&size=300x300&maptype=roadmap&markers=color:red%7C";
+
     public CaptureListItemAdapter(List<Capture> list, Context context) {
         captureArrayList = list;
         this.context = context;
@@ -31,16 +34,6 @@ public class CaptureListItemAdapter extends RecyclerView.Adapter<CaptureListItem
     }
     private Capture getItem(int position) {
         return captureArrayList.get(position);
-    }
-    /*
-    @Override
-    public long getItemId(int position) {
-        return captureArrayList.get(position).getId();
-    }*/
-    public void updateList(List<Capture> newlist) {
-        // Set new updated list
-        captureArrayList.clear();
-        captureArrayList.addAll(newlist);
     }
 
     @Override
@@ -57,16 +50,15 @@ public class CaptureListItemAdapter extends RecyclerView.Adapter<CaptureListItem
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final TextView title;
-        private final TextView latitude;
-        private final TextView longitude;
         private final ImageView imageView;
+        private final ImageView mapImageView;
+
         //initialize the variables
         public ViewHolder(View view) {
             super(view);
             title = (TextView) view.findViewById(R.id.capture_item_title);
-            latitude = (TextView) view.findViewById(R.id.capture_item_latitude);
-            longitude = (TextView) view.findViewById(R.id.capture_item_longitude);
             imageView = (ImageView) view.findViewById(R.id.capture_item_image);
+            mapImageView = (ImageView) view.findViewById(R.id.capture_map_image);
             view.setOnClickListener(this);
         }
         @Override
@@ -74,11 +66,10 @@ public class CaptureListItemAdapter extends RecyclerView.Adapter<CaptureListItem
         }
         public void populateRow(Capture capture) {
             title.setText(capture.getTitle());
-            latitude.setText("Latitude: " + String.valueOf(capture.getLatitude()));
-            longitude.setText("Longitude: " + String.valueOf(capture.getLongitude()));
+            String latitude = String.valueOf(capture.getLatitude());
+            String longitude = String.valueOf(capture.getLongitude());
+
             RotateTransformation t = new RotateTransformation(context, 90);
-
-
             if (capture.getImgcapture() != null) {
                 Glide.with(context)
                         .load(capture.getImgcapture())
@@ -90,6 +81,10 @@ public class CaptureListItemAdapter extends RecyclerView.Adapter<CaptureListItem
                         .transform(t)
                         .into(imageView);
             }
+            String googleMap = mapApiBaseString + latitude + "," + longitude + mapApiConfigString + latitude + "," + longitude;
+            Glide.with(context)
+                    .load(googleMap)
+                    .into(mapImageView);
 
         }
     }
