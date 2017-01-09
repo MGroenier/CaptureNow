@@ -10,8 +10,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ServiceGenerator {
 
+    // Define the server API URL..
     public static final String API_BASE_URL = "http://192.168.1.144:8081/api/";
 
+    // Build a HTTP-client and a service for API communication.
     private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
     private static Retrofit.Builder builder =

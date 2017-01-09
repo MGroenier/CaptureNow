@@ -19,9 +19,12 @@ import local.ebc.capturenow_android_rest.service.ServiceGenerator;
  */
 
 public class CaptureListItemAdapter extends RecyclerView.Adapter<CaptureListItemAdapter.ViewHolder> {
-    final Context context;
+    private final Context context;
     private final List<Capture> captureArrayList;
+
+    // Set the URL to interact with the Google Static Maps Web API
     private final String mapApiBaseString = "https://maps.googleapis.com/maps/api/staticmap?center=";
+    // Set the map configuration
     private final String mapApiConfigString = "&zoom=11&size=300x300&maptype=roadmap&markers=color:red%7C";
 
     public CaptureListItemAdapter(List<Capture> list, Context context) {
@@ -44,7 +47,7 @@ public class CaptureListItemAdapter extends RecyclerView.Adapter<CaptureListItem
     }
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        //Populate the row
+        // Populate the row
         holder.populateRow(getItem(position));
     }
 
@@ -53,7 +56,7 @@ public class CaptureListItemAdapter extends RecyclerView.Adapter<CaptureListItem
         private final ImageView imageView;
         private final ImageView mapImageView;
 
-        //initialize the variables
+        // Initialize the variables
         public ViewHolder(View view) {
             super(view);
             title = (TextView) view.findViewById(R.id.capture_item_title);
@@ -64,12 +67,16 @@ public class CaptureListItemAdapter extends RecyclerView.Adapter<CaptureListItem
         @Override
         public void onClick(View view) {
         }
+
+        // Populate each item of the RecyclerView with the capture data.
         public void populateRow(Capture capture) {
             title.setText(capture.getTitle());
             String latitude = String.valueOf(capture.getLatitude());
             String longitude = String.valueOf(capture.getLongitude());
 
             RotateTransformation t = new RotateTransformation(context, 90);
+
+            // Get local image data if it exists, if not use server resource.
             if (capture.getImgcapture() != null) {
                 Glide.with(context)
                         .load(capture.getImgcapture())
@@ -81,6 +88,8 @@ public class CaptureListItemAdapter extends RecyclerView.Adapter<CaptureListItem
                         .transform(t)
                         .into(imageView);
             }
+
+            // Generate a map and a marker based off of the capture coordinates.
             String googleMap = mapApiBaseString + latitude + "," + longitude + mapApiConfigString + latitude + "," + longitude;
             Glide.with(context)
                     .load(googleMap)

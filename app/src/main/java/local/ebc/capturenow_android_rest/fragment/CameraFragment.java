@@ -4,6 +4,7 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,12 +24,11 @@ import local.ebc.capturenow_android_rest.helper.CameraPreview;
 
 public class CameraFragment extends Fragment {
 
-
+    // Declare variables and initialize the camera preview layout.
     @BindView(R.id.fragment_capture_container) FrameLayout preview;
     private Camera mCamera;
     private CameraPreview mPreview;
     private Boolean captured;
-    //@BindView(R.id.fragment_capture_container) FrameLayout preview;
 
     public CameraFragment() {
     }
@@ -37,9 +37,7 @@ public class CameraFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_capture, container, false);
-        //View v = super.onCreateView(inflater, container, savedInstanceState);
         ButterKnife.bind(this, view);
-
         mCamera = getCameraInstance();
         captured = false;
 
@@ -65,9 +63,10 @@ public class CameraFragment extends Fragment {
         return view;
     }
 
+    // Function to properly release camera after use.
     public void releaseCamera() {
         if (mCamera != null) {
-            mCamera.release();        // release the camera for other applications
+            mCamera.release();
             mCamera = null;
         }
     }
@@ -75,14 +74,17 @@ public class CameraFragment extends Fragment {
     public static Camera getCameraInstance(){
         Camera c = null;
         try {
-            c = Camera.open(0); // attempt to get a Camera instance
+            // Ready the rear camera.
+            c = Camera.open(0);
         }
         catch (Exception e){
-            // Camera is not available (in use or does not exist)
+            // No camera found.
+            Log.d("CameraFragment", "Camera not found.");
         }
-        return c; // returns null if camera is unavailable
+        return c; // Returns null if camera is unavailable.
     }
 
+    // Release camera when fragment is detached.
     @Override
     public void onDetach() {
         super.onDetach();

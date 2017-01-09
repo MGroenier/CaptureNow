@@ -87,24 +87,24 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
         buildGoogleApiClient();
         context = this;
 
-        //Used by the camerafragment.
+        // Used by the camerafragment.
         capturing = false;
         manager = getSupportFragmentManager();
 
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
 
-        //Show newest captures first.
+        // Show newest captures first.
         mLayoutManager.setReverseLayout(true);
         mLayoutManager.setStackFromEnd(true);
 
-        //Set up the recyclerview.
+        // Set up the recyclerview.
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setHasFixedSize(true);
         list = new ArrayList<>();
         adapter = new CaptureListItemAdapter(list, context);
         recyclerView.setAdapter(adapter);
 
-        //Set up the CaptureService and retrieve all captures from server.
+        // Set up the CaptureService and retrieve all captures from server.
         client = ServiceGenerator.createService(CaptureService.class);
         getCaptures();
 
@@ -113,20 +113,20 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
             @Override
             public void onClick(View view) {
                 if(!capturing){
-                    //Load the camera fragment.
+                    // Load the camera fragment.
                     loadFragment();
 
-                    //Connect the GPS API.
+                    // Connect the GPS API.
                     mGoogleApiClient.connect();
                 } else {
-                    //Remove the camera fragment.
+                    // Remove the camera fragment.
                     manager = getSupportFragmentManager();
                     transaction = manager.beginTransaction();
                     transaction.remove(fragment);
                     transaction.commit();
                     capturing = false;
 
-                    //Disconnect the GPS API.
+                    // Disconnect the GPS API.
                     mGoogleApiClient.disconnect();
 
                     recyclerView.scrollToPosition(list.size()-1);
@@ -135,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
         });
     }
 
+    // Callback called when a picture is taken in the CameraFragment.
     public Camera.PictureCallback mPicture = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
@@ -143,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
         }
     };
 
+    // Create a capture and add it to the RecyclerView.
     private void createCapture(byte[] data){
         Calendar c = Calendar.getInstance();
         int seconds = c.get(Calendar.SECOND);
@@ -155,10 +157,10 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
 
         list.add(capture);
         adapter.notifyDataSetChanged();
-
     }
 
-    void loadFragment(){
+    // Load the CameraFragment.
+    private void loadFragment(){
         capturing = true;
         fragment = new CameraFragment();
         transaction = manager.beginTransaction();
@@ -166,6 +168,7 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
         transaction.commit();
     }
 
+    // Initialize the client for Google API communication.
     synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -188,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+        // noinspection SimplifiableIfStatement
         if (id == R.id.action_getcaptures) {
             getCaptures();
             return true;
@@ -196,6 +199,8 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
         return super.onOptionsItemSelected(item);
     }
 
+
+    // Function called when GPS location changes.
     @Override
     public void onLocationChanged(Location location) {
         lat = location.getLatitude();
@@ -209,21 +214,24 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
         super.onStart();
     }
 
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mGoogleApiClient.disconnect();
     }
 
+
+    //Function called when the Google API client is connected.
     @Override
     public void onConnected(Bundle bundle) {
+        //Define the request.
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mLocationRequest.setInterval(10000); // Update location every second
-
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        //Get coordinates if a location is known.
         if (mLastLocation != null) {
             lat = mLastLocation.getLatitude();
             lon = mLastLocation.getLongitude();
@@ -239,6 +247,7 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
         buildGoogleApiClient();
     }
 
+    //Save the jpeg-encoded byte array to a temporary file.
     public void bytesToFile(byte[] data){
         try {
             file = File.createTempFile("capture", null, this.getCacheDir());
@@ -249,6 +258,7 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
             e.printStackTrace();
         }
     }
+
 
     private void uploadCapture() {
         // create RequestBody instance from file
@@ -283,11 +293,13 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
         });
     }
 
+    //Retrieve all captures from server.
     private void getCaptures() {
         Call<List<Capture>> call = client.listCaptures();
         call.enqueue(this);
     }
 
+    //If response contains captures, display them in the RecyclerView.
     @Override
     public void onResponse(Call<List<Capture>> call, Response<List<Capture>> response) {
         if(response.isSuccessful()) {

@@ -8,6 +8,7 @@ import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 
 /**
  * @author bumptech\glide
+ * Transformation is used to show the picture in correct orientation.
  */
 
 public class RotateTransformation extends BitmapTransformation {
