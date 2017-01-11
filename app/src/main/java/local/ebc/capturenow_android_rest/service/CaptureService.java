@@ -22,13 +22,18 @@ public interface CaptureService {
     @GET("captures")
     Call<List<Capture>> listCaptures();
 
+    // Retrieve latest capture.
+    @GET("captures/latest")
+    Call<Capture> getLatestCapture();
+
     // Create a new Capture
     @Multipart
     @POST("captures")
     Call<ResponseBody> createCapture(@Part MultipartBody.Part file,
                                      @Part("title") RequestBody title,
                                      @Part("longitude") RequestBody longitude,
-                                     @Part("latitude") RequestBody latitude
+                                     @Part("latitude") RequestBody latitude,
+                                     @Part("timestamp") RequestBody timestamp
                                      );
 
 }

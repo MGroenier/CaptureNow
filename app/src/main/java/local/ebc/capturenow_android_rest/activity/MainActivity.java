@@ -1,6 +1,7 @@
 package local.ebc.capturenow_android_rest.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Camera;
 import android.location.Location;
 import android.net.Uri;
@@ -40,6 +41,7 @@ import local.ebc.capturenow_android_rest.adapter.CaptureListItemAdapter;
 import local.ebc.capturenow_android_rest.fragment.CameraFragment;
 import local.ebc.capturenow_android_rest.model.Capture;
 import local.ebc.capturenow_android_rest.service.CaptureService;
+import local.ebc.capturenow_android_rest.service.NotificationService;
 import local.ebc.capturenow_android_rest.service.ServiceGenerator;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -80,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        startService(new Intent(this, NotificationService.class));
+
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -278,7 +283,9 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
 
         RequestBody longitude = RequestBody.create(MediaType.parse("multipart/form-data"), capture.getLongitude().toString());
 
-        Call<ResponseBody> call = client.createCapture(body, titlePart, latitude, longitude);
+        RequestBody timestamp = RequestBody.create(MediaType.parse("multipart/form-data"), new Date().toString());
+
+        Call<ResponseBody> call = client.createCapture(body, titlePart, latitude, longitude, timestamp);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
