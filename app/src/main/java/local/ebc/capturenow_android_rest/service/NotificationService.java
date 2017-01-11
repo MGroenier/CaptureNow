@@ -61,6 +61,10 @@ public class NotificationService extends Service {
                                          timestampLatestCapture = new Date();
                                          Log.d(TAG, "A more recent capture was found! " + latestCapture.getTitle() + " " + latestCapture.getTimestamp());
 
+                                         Intent intent = new Intent();
+                                         intent.setAction("local.ebc.capturenow_android_rest.NEW_CONTENT_NOTIFICATION");
+                                         sendBroadcast(intent);
+
                                          NotificationCompat.Builder mBuilder =
                                                  new NotificationCompat.Builder(getBaseContext())
                                                          .setSmallIcon(R.drawable.ic_panorama_black_24dp)

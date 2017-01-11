@@ -1,7 +1,9 @@
 package local.ebc.capturenow_android_rest.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.Camera;
 import android.location.Location;
 import android.net.Uri;
@@ -138,6 +140,14 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
                 }
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("local.ebc.capturenow_android_rest.NEW_CONTENT_NOTIFICATION");
+        registerReceiver(newContentBroadcastReceiver, filter);
+        super.onResume();
     }
 
     // Callback called when a picture is taken in the CameraFragment.
@@ -323,5 +333,18 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
     public void onFailure(Call<List<Capture>> call, Throwable t) {
         Log.e(TAG, "Request NOT successful", t);
     }
+
+    private BroadcastReceiver newContentBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+//            Toast.makeText(context, "New content on server!", Toast.LENGTH_LONG).show();
+            Log.d("BROADCAST", "RECEIVED A BROADCAST!!!");
+
+            Intent restartIntent = getIntent();
+            finish();
+            startActivity(restartIntent);
+
+        }
+    };
 
 }
