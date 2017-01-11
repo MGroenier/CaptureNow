@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.Camera;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -22,14 +21,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.google.android.gms.appdatasearch.GetRecentContextCall;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,11 +37,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import local.ebc.capturenow_android_rest.R;
 import local.ebc.capturenow_android_rest.adapter.CaptureListItemAdapter;
+import local.ebc.capturenow_android_rest.api.CapNowAPI;
 import local.ebc.capturenow_android_rest.fragment.CameraFragment;
 import local.ebc.capturenow_android_rest.model.Capture;
-import local.ebc.capturenow_android_rest.service.CaptureService;
 import local.ebc.capturenow_android_rest.service.NotificationService;
-import local.ebc.capturenow_android_rest.service.ServiceGenerator;
+import local.ebc.capturenow_android_rest.api.APIClientGenerator;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -65,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
     private LocationRequest mLocationRequest;
     private Double lat,lon;
     private boolean capturing;
-    private CaptureService client;
+    private CapNowAPI client;
     private static final String TAG = "MainActivity";
     private File file;
 
@@ -111,8 +108,8 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
         adapter = new CaptureListItemAdapter(list, context);
         recyclerView.setAdapter(adapter);
 
-        // Set up the CaptureService and retrieve all captures from server.
-        client = ServiceGenerator.createService(CaptureService.class);
+        // Set up the CapNowAPI and retrieve all captures from server.
+        client = APIClientGenerator.createService(CapNowAPI.class);
         getCaptures();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -326,6 +323,7 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
                 list.add(capture);
             }
             adapter.notifyDataSetChanged();
+            recyclerView.smoothScrollToPosition(list.size());
         }
     }
 
@@ -340,9 +338,11 @@ public class MainActivity extends AppCompatActivity implements Callback<List<Cap
 //            Toast.makeText(context, "New content on server!", Toast.LENGTH_LONG).show();
             Log.d("BROADCAST", "RECEIVED A BROADCAST!!!");
 
-            Intent restartIntent = getIntent();
-            finish();
-            startActivity(restartIntent);
+//            Intent restartIntent = getIntent();
+//            finish();
+//            startActivity(restartIntent);
+
+            getCaptures();
 
         }
     };

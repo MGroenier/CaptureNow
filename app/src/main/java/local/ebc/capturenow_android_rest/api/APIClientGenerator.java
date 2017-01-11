@@ -1,4 +1,4 @@
-package local.ebc.capturenow_android_rest.service;
+package local.ebc.capturenow_android_rest.api;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by Martijn on 18/12/2016.
  */
 
-public class ServiceGenerator {
+public class APIClientGenerator {
 
 //    public static final String API_BASE_URL = "http://172.15.3.38:8081/api/";
 //    public static final String API_BASE_URL = "http://10.0.2.2:8081/api/";

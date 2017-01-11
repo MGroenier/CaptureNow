@@ -1,4 +1,4 @@
-package local.ebc.capturenow_android_rest.service;
+package local.ebc.capturenow_android_rest.api;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ import retrofit2.http.Part;
  * Created by Martijn on 06/12/2016.
  */
 
-public interface CaptureService {
+public interface CapNowAPI {
 
     // Retrieve all existing Captures.
     @GET("captures")

@@ -3,11 +3,8 @@ package local.ebc.capturenow_android_rest.service;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -18,6 +15,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import local.ebc.capturenow_android_rest.R;
+import local.ebc.capturenow_android_rest.api.CapNowAPI;
+import local.ebc.capturenow_android_rest.api.APIClientGenerator;
 import local.ebc.capturenow_android_rest.model.Capture;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,13 +30,13 @@ public class NotificationService extends Service {
 
     public static final String TAG = "NotificationService";
     private Timer timer = new Timer();
-    private CaptureService client;
+    private CapNowAPI client;
     private Date timestampLatestCapture;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        client = ServiceGenerator.createService(CaptureService.class);
+        client = APIClientGenerator.createService(CapNowAPI.class);
         timestampLatestCapture = new Date();
     }
 

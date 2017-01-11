@@ -12,7 +12,7 @@ import java.util.List;
 import local.ebc.capturenow_android_rest.R;
 import local.ebc.capturenow_android_rest.helper.RotateTransformation;
 import local.ebc.capturenow_android_rest.model.Capture;
-import local.ebc.capturenow_android_rest.service.ServiceGenerator;
+import local.ebc.capturenow_android_rest.api.APIClientGenerator;
 
 /**
  * @author Emil Claussen on 15.12.2016.
@@ -84,7 +84,7 @@ public class CaptureListItemAdapter extends RecyclerView.Adapter<CaptureListItem
                         .into(imageView);
             } else {
                 Glide.with(context)
-                        .load(ServiceGenerator.API_BASE_URL + "captures/jpg/" + capture.getId())
+                        .load(APIClientGenerator.API_BASE_URL + "captures/jpg/" + capture.getId())
                         .transform(t)
                         .into(imageView);
             }
